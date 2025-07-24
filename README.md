@@ -32,12 +32,12 @@ This project implements a real-time traffic monitoring backend using FastAPI, MQ
 
 ### Subscribed Topics
 
-- `traffic/+/raw` — raw vehicle count and congestion level
+- `traffic/raw/+` — raw vehicle count and congestion level
 - `traffic/all/health` — device keep-alive messages
 
 ### Published Topics
 
-- `traffic/{street_id}/status` — broadcasted congestion level
+- `traffic/status/{street_id}` — broadcasted congestion level
 
 ---
 
@@ -51,7 +51,7 @@ This project implements a real-time traffic monitoring backend using FastAPI, MQ
 
 ## Example Payloads
 
-### `traffic/{street_id}/raw`
+### `traffic/raw/{street_id}`
 
 ```json
 {
@@ -74,7 +74,7 @@ This project implements a real-time traffic monitoring backend using FastAPI, MQ
 }
 ```
 
-### `traffic/{street_id}/status`
+### `traffic/status/{street_id}`
 
 ```json
 {

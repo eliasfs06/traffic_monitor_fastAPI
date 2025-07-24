@@ -9,8 +9,8 @@ MQTT_PORT = 1883
 
 def on_connect(client, userdata, flags, rc):
     print("Conectado ao MQTT")
-    client.subscribe("traffic/+/raw")
-    client.subscribe("traffic/all/health")
+    client.subscribe("traffic/raw/+")
+    client.subscribe("traffic/health")
 
 def on_message(client, userdata, msg):
     session = SessionLocal()
@@ -18,22 +18,23 @@ def on_message(client, userdata, msg):
         payload = json.loads(msg.payload.decode())
         topic = msg.topic
 
-        if topic.startswith("traffic/") and topic.endswith("/raw"):
+        if topic.startswith("traffic/raw/"):
+            street_id = topic.split("/")[-1]  # extrai o {street_id}
+
             raw = TrafficRaw(
                 device_id=payload["device_id"],
                 timestamp=datetime.fromisoformat(payload["timestamp"].replace("Z", "+00:00")),
-                street_id=payload["street_id"],
+                street_id=street_id,
                 vehicle_count=payload["vehicle_count"],
                 congestion_level=payload.get("congestion_level")
             )
             session.add(raw)
 
-            # Também publica status
-            status_topic = f"traffic/{payload['street_id']}/status"
+            status_topic = f"traffic/status/{street_id}"
             status_payload = {
                 "device_id": payload["device_id"],
                 "timestamp": payload["timestamp"],
-                "street_id": payload["street_id"],
+                "street_id": street_id,
                 "congestion_level": payload.get("congestion_level", "desconhecido")
             }
             client.publish(status_topic, json.dumps(status_payload))
@@ -41,7 +42,7 @@ def on_message(client, userdata, msg):
             status = TrafficStatus(**status_payload)
             session.add(status)
 
-        elif topic == "traffic/all/health":
+        elif topic == "traffic/health":
             health = DeviceHealth(
                 device_id=payload["device_id"],
                 timestamp=datetime.fromisoformat(payload["timestamp"].replace("Z", "+00:00")),
