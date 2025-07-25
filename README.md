@@ -128,4 +128,4 @@ Replace the password or database name if different in your environment.
 uvicorn main:app --reload
 ```
 
-The backend will connect to the MQTT broker and begin processing messages.
+The backend will connect to the MQTT broker and begin processing messages.E
