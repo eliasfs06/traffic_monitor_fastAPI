@@ -3,3 +3,4 @@ uvicorn
 paho-mqtt
 psycopg2-binary
 sqlalchemy
+matplotlib>=3.5
